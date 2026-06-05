@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLANET Style Collective — Partner Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#2C1F1A;--gold:#B8936A;--cream:#F7F3EE;--stone:#9E8E82;
+  --border:#E5DDD5;--white:#FDFBF9;--green:#4A7C59;--red:#8B3A3A;
+  --ltgold:#D4C4B0;--bg:#F0E8DF;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);font-family:'Montserrat',sans-serif;color:var(--deep);min-height:100vh;}
+
+/* LOGIN */
+#loginScreen{
+  position:fixed;inset:0;background:var(--deep);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;transition:opacity 0.5s;
+}
+#loginScreen.hidden{opacity:0;pointer-events:none;}
+.login-box{width:380px;text-align:center;padding:40px;}
+.login-logo{color:var(--white);font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:0.1em;margin-bottom:4px;}
+.login-tag{color:var(--gold);font-size:9px;letter-spacing:0.25em;text-transform:uppercase;margin-bottom:40px;display:block;}
+.login-title{color:var(--ltgold);font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;margin-bottom:28px;font-style:italic;}
+.login-field{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);padding:12px 16px;font-family:'Montserrat',sans-serif;font-size:11px;color:var(--white);letter-spacing:0.05em;outline:none;margin-bottom:12px;transition:border 0.2s;}
+.login-field::placeholder{color:rgba(255,255,255,0.3);}
+.login-field:focus{border-color:var(--gold);}
+.login-btn{width:100%;background:var(--gold);border:none;padding:13px;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--white);cursor:pointer;margin-top:8px;transition:background 0.2s;}
+.login-btn:hover{background:#A07A54;}
+.login-err{color:#d47a7a;font-size:10px;letter-spacing:0.05em;margin-top:10px;min-height:16px;}
+.login-loading{color:var(--stone);font-size:10px;letter-spacing:0.1em;margin-top:10px;min-height:16px;}
+
+/* PORTAL */
+#portal{display:none;}
+#portal.visible{display:block;}
+
+/* HEADER */
+header{background:var(--deep);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.h-logo{color:var(--white);font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.08em;}
+.h-logo span{color:var(--gold);font-style:italic;font-size:13px;margin-left:10px;letter-spacing:0.12em;font-weight:300;}
+.h-right{display:flex;align-items:center;gap:24px;}
+.h-name{color:var(--stone);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;}
+.h-logout{background:transparent;border:1px solid rgba(184,147,106,0.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all 0.2s;}
+.h-logout:hover{background:rgba(184,147,106,0.1);}
+
+/* GOLD BAR */
+.g-bar{height:3px;background:linear-gradient(90deg,var(--gold) 0%,#D4A97A 50%,var(--gold) 100%);}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 48px;display:flex;gap:0;}
+.nav-btn{background:transparent;border:none;border-bottom:2px solid transparent;padding:14px 20px;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--stone);cursor:pointer;transition:all 0.2s;margin-bottom:-1px;}
+.nav-btn.active{color:var(--deep);border-bottom-color:var(--gold);font-weight:600;}
+
+/* MAIN */
+main{padding:36px 48px;max-width:1200px;margin:0 auto;}
+.sec-title{font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--stone);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* TABS */
+.tab{display:none;}.tab.active{display:block;}
+
+/* OVERVIEW */
+.ov-top{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px;}
+.stat-card{background:var(--white);border:1px solid var(--border);padding:24px 20px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--border);}
+.stat-card.gold::before{background:var(--gold);}
+.stat-card.green::before{background:var(--green);}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;line-height:1;margin-bottom:6px;}
+.stat-val.gold{color:var(--gold);}
+.stat-val.green{color:var(--green);}
+.stat-lbl{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--stone);}
+
+.link-card{background:var(--deep);padding:28px 32px;margin-bottom:28px;display:grid;grid-template-columns:1fr 1fr;gap:32px;}
+.lc-label{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--stone);margin-bottom:8px;}
+.lc-val{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--white);margin-bottom:12px;word-break:break-all;}
+.lc-copy{background:transparent;border:1px solid rgba(184,147,106,0.4);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;padding:6px 16px;cursor:pointer;transition:all 0.2s;}
+.lc-copy:hover{background:rgba(184,147,106,0.1);}
+.lc-copied{color:var(--green);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;margin-left:10px;opacity:0;transition:opacity 0.3s;}
+.lc-copied.show{opacity:1;}
+
+.ov-bot{display:grid;grid-template-columns:1fr 320px;gap:20px;}
+.sales-card{background:var(--white);border:1px solid var(--border);padding:24px;}
+.act-card{background:var(--white);border:1px solid var(--border);padding:20px;}
+
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--cream);}
+th{padding:9px 14px;font-size:8px;letter-spacing:0.13em;text-transform:uppercase;color:var(--stone);text-align:left;border-bottom:1px solid var(--border);}
+td{padding:10px 14px;font-size:11px;border-bottom:1px solid var(--border);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:rgba(184,147,106,0.03);}
+
+.badge{display:inline-block;padding:2px 8px;font-size:8px;letter-spacing:0.08em;text-transform:uppercase;}
+.badge.approved{background:rgba(74,124,89,0.1);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+.badge.pending{background:rgba(184,147,106,0.1);color:var(--gold);border:1px solid rgba(184,147,106,0.2);}
+.badge.rejected{background:rgba(139,58,58,0.1);color:var(--red);border:1px solid rgba(139,58,58,0.2);}
+
+/* RESOURCES */
+.res-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.res-card{background:var(--white);border:1px solid var(--border);padding:24px;display:flex;flex-direction:column;gap:12px;}
+.res-icon{width:36px;height:36px;background:var(--cream);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.res-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--deep);}
+.res-desc{font-size:10px;color:var(--stone);line-height:1.6;}
+.res-btn{background:var(--deep);color:var(--white);border:none;padding:9px 18px;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;align-self:flex-start;text-decoration:none;display:inline-block;transition:background 0.2s;}
+.res-btn:hover{background:#3D2A22;}
+
+/* KIT REQUEST */
+.kit-card{background:var(--white);border:1px solid var(--border);padding:32px;max-width:680px;}
+.kit-intro{font-size:11px;color:var(--stone);line-height:1.7;margin-bottom:28px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:9px;letter-spacing:0.13em;text-transform:uppercase;color:var(--stone);}
+input,select,textarea{border:1px solid var(--border);padding:10px 12px;font-family:'Montserrat',sans-serif;font-size:11px;color:var(--deep);background:var(--cream);outline:none;transition:border 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:80px;}
+.submit-btn{background:var(--gold);color:var(--white);border:none;padding:12px 32px;font-family:'Montserrat',sans-serif;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;margin-top:8px;transition:background 0.2s;}
+.submit-btn:hover{background:#A07A54;}
+.form-success{background:rgba(74,124,89,0.08);border:1px solid rgba(74,124,89,0.2);padding:16px;color:var(--green);font-size:11px;margin-top:16px;display:none;}
+
+/* Empty state */
+.empty{text-align:center;padding:40px;color:var(--stone);font-size:11px;font-style:italic;}
+
+/* Loading spinner */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(184,147,106,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">PLANET</div>
+    <span class="login-tag">by Lauren G</span>
+    <div class="login-title">Style Collective Partner Portal</div>
+    <input class="login-field" id="loginEmail" type="email" placeholder="Email address" autocomplete="email"/>
+    <input class="login-field" id="loginPass" type="password" placeholder="Password" autocomplete="current-password"/>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-loading" id="loginLoad"></div>
+  </div>
+</div>
+
+<!-- PORTAL -->
+<div id="portal">
+  <header>
+    <div class="h-logo">PLANET <span>Style Collective</span></div>
+    <div class="h-right">
+      <span class="h-name" id="headerName"></span>
+      <button class="h-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </header>
+  <div class="g-bar"></div>
+  <nav>
+    <button class="nav-btn active" id="btn-overview" onclick="switchTab('overview')">Overview</button>
+    <button class="nav-btn" id="btn-sales" onclick="switchTab('sales')">Sales & Commissions</button>
+    <button class="nav-btn" id="btn-kit" onclick="switchTab('kit')">Kit Request</button>
+    <button class="nav-btn" id="btn-resources" onclick="switchTab('resources')">Resources</button>
+  </nav>
+  <main>
+
+    <!-- OVERVIEW -->
+    <div class="tab active" id="tab-overview">
+      <div class="sec-title">Dashboard</div>
+      <div class="ov-top">
+        <div class="stat-card gold">
+          <div class="stat-val gold" id="statCommission">—</div>
+          <div class="stat-lbl">Pending Commission</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-val green" id="statPaid">—</div>
+          <div class="stat-lbl">Total Paid Out</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statSales">—</div>
+          <div class="stat-lbl">Total Sales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="statClicks">—</div>
+          <div class="stat-lbl">Link Clicks</div>
+        </div>
+      </div>
+
+      <div class="link-card">
+        <div>
+          <div class="lc-label">Your Referral Link</div>
+          <div class="lc-val" id="affLink">—</div>
+          <button class="lc-copy" onclick="copyText('affLink','copiedLink')">Copy Link</button>
+          <span class="lc-copied" id="copiedLink">Copied!</span>
+        </div>
+        <div>
+          <div class="lc-label">Your Discount Code</div>
+          <div class="lc-val" id="affCode" style="font-size:32px;letter-spacing:0.08em;">—</div>
+          <button class="lc-copy" onclick="copyText('affCode','copiedCode')">Copy Code</button>
+          <span class="lc-copied" id="copiedCode">Copied!</span>
+        </div>
+      </div>
+
+      <div class="ov-bot">
+        <div class="sales-card">
+          <div class="sec-title">Recent Sales</div>
+          <div id="recentSales"><div class="empty">Loading sales...</div></div>
+        </div>
+        <div class="act-card">
+          <div class="sec-title">Quick Links</div>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+            <a href="https://shopplanetbylaureng.com" target="_blank" class="res-btn" style="text-align:center;">Shop PLANET</a>
+            <button class="res-btn" style="background:var(--stone);" onclick="switchTab('kit')">Request a Kit</button>
+            <a href="https://www.instagram.com/planetbylaureng" target="_blank" class="res-btn" style="background:transparent;border:1px solid var(--border);color:var(--deep);">@planetbylaureng</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div class="tab" id="tab-sales">
+      <div class="sec-title">Sales & Commissions</div>
+      <div style="background:var(--white);border:1px solid var(--border);overflow:hidden;">
+        <div id="salesTable"><div class="empty">Loading...</div></div>
+      </div>
+    </div>
+
+    <!-- KIT REQUEST -->
+    <div class="tab" id="tab-kit">
+      <div class="sec-title">Request a Sample Kit</div>
+      <div class="kit-card">
+        <p class="kit-intro">Choose 3–5 pieces from our current collection at <a href="https://shopplanetbylaureng.com" target="_blank" style="color:var(--gold)">shopplanetbylaureng.com</a> and let us know your details below. We'll get your kit on its way within 5–7 business days.</p>
+        <div class="form-row">
+          <div class="form-group"><label>Piece 1</label><input type="text" id="piece1" placeholder="Product name + color"/></div>
+          <div class="form-group"><label>Size</label><input type="text" id="size1" placeholder="XS / S / M / L / XL"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Piece 2</label><input type="text" id="piece2" placeholder="Product name + color"/></div>
+          <div class="form-group"><label>Size</label><input type="text" id="size2" placeholder="XS / S / M / L / XL"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Piece 3</label><input type="text" id="piece3" placeholder="Product name + color"/></div>
+          <div class="form-group"><label>Size</label><input type="text" id="size3" placeholder="XS / S / M / L / XL"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Piece 4 (optional)</label><input type="text" id="piece4" placeholder="Product name + color"/></div>
+          <div class="form-group"><label>Size</label><input type="text" id="size4" placeholder="XS / S / M / L / XL"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Piece 5 (optional)</label><input type="text" id="piece5" placeholder="Product name + color"/></div>
+          <div class="form-group"><label>Size</label><input type="text" id="size5" placeholder="XS / S / M / L / XL"/></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full"><label>Shipping Address</label><textarea id="shipAddr" placeholder="Street address, city, state, zip"></textarea></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full"><label>Notes (optional)</label><textarea id="kitNotes" placeholder="Color preferences, styling notes, anything we should know..."></textarea></div>
+        </div>
+        <button class="submit-btn" onclick="submitKit()">Submit Kit Request</button>
+        <div class="form-success" id="kitSuccess">✓ Kit request received! We'll be in touch within 1–2 business days.</div>
+      </div>
+    </div>
+
+    <!-- RESOURCES -->
+    <div class="tab" id="tab-resources">
+      <div class="sec-title">Partner Resources</div>
+      <div class="res-grid">
+        <div class="res-card">
+          <div class="res-icon">📋</div>
+          <div class="res-title">Kit Guide</div>
+          <div class="res-desc">Everything you need to know about your sample kit — 30-day window, keep & return policy, and how charging works.</div>
+          <a href="#" class="res-btn">Download PDF</a>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">🏷️</div>
+          <div class="res-title">Brand Guidelines</div>
+          <div class="res-desc">Approved hashtags, handles, and brand messaging to use when sharing PLANET content with your audience.</div>
+          <button class="res-btn" onclick="alert('Coming soon!')">Coming Soon</button>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">📸</div>
+          <div class="res-title">Product Images</div>
+          <div class="res-desc">High-resolution product photos and lifestyle imagery for your posts, newsletters, and content.</div>
+          <button class="res-btn" onclick="alert('Coming soon!')">Coming Soon</button>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">💬</div>
+          <div class="res-title">Talking Points</div>
+          <div class="res-desc">Key selling points, fabric stories, and client conversation starters to help you share PLANET confidently.</div>
+          <button class="res-btn" onclick="alert('Coming soon!')">Coming Soon</button>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">✉️</div>
+          <div class="res-title">Contact Sofia</div>
+          <div class="res-desc">Questions about your kit, commission, or the program? Reach out directly — we always reply within one business day.</div>
+          <a href="mailto:sofiapiniella@iftheplanet.com" class="res-btn">Send Email</a>
+        </div>
+        <div class="res-card">
+          <div class="res-icon">🛍️</div>
+          <div class="res-title">Shop the Collection</div>
+          <div class="res-desc">Browse the current collection to choose your kit pieces or preview what's new for your clients.</div>
+          <a href="https://shopplanetbylaureng.com" target="_blank" class="res-btn">Visit Store</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var PUBLIC_TOKEN = '5bbb5e7d83cbb8340673b1f07fa72b49606dd4e26e6e70b4737e3769d64ee814';
+var AT_TOKEN = 'pattCK8tOv3M4b3l0.68863e0f8722856c54edd95487612decea5f8f299578597572fa348abf28ad83';
+var AT_BASE = 'appTCR9CFFn3y2Lgq';
+var AT_TABLE = 'tblku4UydCySa4fvd';
+var CURRENT_AFF = null;
+
+// ── LOGIN ──────────────────────────────────────────────────────
+async function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value.trim();
+  var err = document.getElementById('loginErr');
+  var load = document.getElementById('loginLoad');
+  err.textContent = '';
+  if (!email || !pass) { err.textContent = 'Please enter your email and password.'; return; }
+  load.innerHTML = '<span class="spin"></span> Signing in…';
+  try {
+    var resp = await fetch('/api/goaffpro?path=/v1/affiliate/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: pass })
+    });
+    var data = await resp.json();
+    if (data && data.affiliate) {
+      CURRENT_AFF = data.affiliate;
+      load.textContent = '';
+      showPortal();
+    } else {
+      load.textContent = '';
+      err.textContent = data.message || 'Invalid email or password.';
+    }
+  } catch(e) {
+    load.textContent = '';
+    err.textContent = 'Connection error. Please try again.';
+  }
+}
+
+document.getElementById('loginEmail').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('loginPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  CURRENT_AFF = null;
+  document.getElementById('portal').classList.remove('visible');
+  document.getElementById('portal').style.display = 'none';
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginErr').textContent = '';
+}
+
+// ── SHOW PORTAL ────────────────────────────────────────────────
+function showPortal() {
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('portal').style.display = 'block';
+  document.getElementById('portal').classList.add('visible');
+  populatePortal();
+}
+
+function populatePortal() {
+  var aff = CURRENT_AFF;
+  var name = (aff.first_name || '') + ' ' + (aff.last_name || '');
+  document.getElementById('headerName').textContent = name.trim();
+
+  // Stats
+  var pending = aff.pending_commission != null ? '$' + parseFloat(aff.pending_commission).toFixed(2) : '$0.00';
+  var paid = aff.total_paid != null ? '$' + parseFloat(aff.total_paid).toFixed(2) : '$0.00';
+  var sales = aff.total_sales != null ? aff.total_sales : '0';
+  var clicks = aff.total_clicks != null ? aff.total_clicks : '0';
+  document.getElementById('statCommission').textContent = pending;
+  document.getElementById('statPaid').textContent = paid;
+  document.getElementById('statSales').textContent = sales;
+  document.getElementById('statClicks').textContent = clicks;
+
+  // Link & code
+  var link = aff.referral_link || aff.ref_link || ('https://shopplanetbylaureng.com?ref=' + (aff.ref_code || ''));
+  var code = aff.coupon || aff.ref_code || '—';
+  document.getElementById('affLink').textContent = link;
+  document.getElementById('affCode').textContent = code;
+
+  // Load sales
+  loadSales();
+}
+
+// ── SALES ──────────────────────────────────────────────────────
+async function loadSales() {
+  try {
+    var resp = await fetch('/api/goaffpro?path=/v1/affiliate/sales?limit=20', {
+      headers: { 'Authorization': 'Bearer ' + (CURRENT_AFF.token || '') }
+    });
+    var data = await resp.json();
+    var sales = data.sales || data.data || [];
+    renderSalesTable(sales);
+    renderRecentSales(sales.slice(0,5));
+  } catch(e) {
+    document.getElementById('recentSales').innerHTML = '<div class="empty">No sales data available yet.</div>';
+    document.getElementById('salesTable').innerHTML = '<div class="empty">No sales data available yet.</div>';
+  }
+}
+
+function renderRecentSales(sales) {
+  if (!sales.length) {
+    document.getElementById('recentSales').innerHTML = '<div class="empty">No sales yet — share your link to get started!</div>';
+    return;
+  }
+  var html = '<table><thead><tr><th>Date</th><th>Order</th><th>Amount</th><th>Commission</th><th>Status</th></tr></thead><tbody>';
+  sales.forEach(function(s) {
+    var status = (s.status || 'pending').toLowerCase();
+    html += '<tr><td style="color:var(--stone)">' + (s.date||s.created_at||'—').split('T')[0] + '</td>'
+      + '<td>#' + (s.order_id||s.order_number||'—') + '</td>'
+      + '<td>$' + parseFloat(s.sale_amount||s.total||0).toFixed(2) + '</td>'
+      + '<td style="color:var(--green)">$' + parseFloat(s.commission||0).toFixed(2) + '</td>'
+      + '<td><span class="badge ' + status + '">' + status + '</span></td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('recentSales').innerHTML = html;
+}
+
+function renderSalesTable(sales) {
+  if (!sales.length) {
+    document.getElementById('salesTable').innerHTML = '<div class="empty">No sales yet — share your link to get started!</div>';
+    return;
+  }
+  var html = '<table><thead><tr><th>Date</th><th>Order</th><th>Sale Amount</th><th>Commission</th><th>Status</th></tr></thead><tbody>';
+  sales.forEach(function(s) {
+    var status = (s.status || 'pending').toLowerCase();
+    html += '<tr><td style="color:var(--stone)">' + (s.date||s.created_at||'—').split('T')[0] + '</td>'
+      + '<td>#' + (s.order_id||s.order_number||'—') + '</td>'
+      + '<td>$' + parseFloat(s.sale_amount||s.total||0).toFixed(2) + '</td>'
+      + '<td style="color:var(--green);font-weight:600">$' + parseFloat(s.commission||0).toFixed(2) + '</td>'
+      + '<td><span class="badge ' + status + '">' + status + '</span></td></tr>';
+  });
+  html += '</tbody></table>';
+  document.getElementById('salesTable').innerHTML = html;
+}
+
+// ── KIT REQUEST ────────────────────────────────────────────────
+async function submitKit() {
+  var pieces = [];
+  for (var i = 1; i <= 5; i++) {
+    var p = document.getElementById('piece'+i).value.trim();
+    var s = document.getElementById('size'+i).value.trim();
+    if (p) pieces.push(p + (s ? ' (' + s + ')' : ''));
+  }
+  var addr = document.getElementById('shipAddr').value.trim();
+  var notes = document.getElementById('kitNotes').value.trim();
+  if (!pieces.length || !addr) { alert('Please add at least one piece and your shipping address.'); return; }
+
+  var aff = CURRENT_AFF;
+  var name = (aff.first_name || '') + ' ' + (aff.last_name || '');
+  var noteText = 'Kit request from ' + name.trim() + ' (' + (aff.email||'') + ')\n'
+    + 'Pieces: ' + pieces.join(', ') + '\n'
+    + 'Ship to: ' + addr
+    + (notes ? '\nNotes: ' + notes : '');
+
+  try {
+    await fetch('https://api.airtable.com/v0/' + AT_BASE + '/' + AT_TABLE, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + AT_TOKEN, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ records: [{ fields: {
+        fldlwjCtxUwD2OtaS: name.trim() + ' — Kit Request',
+        fldBoECgjy8cQMABM: noteText,
+        fldp648BxV5MKWA1N: new Date().toISOString().split('T')[0]
+      }}]})
+    });
+    document.getElementById('kitSuccess').style.display = 'block';
+    ['piece1','piece2','piece3','piece4','piece5','size1','size2','size3','size4','size5','shipAddr','kitNotes'].forEach(function(id){
+      document.getElementById(id).value = '';
+    });
+  } catch(e) {
+    alert('Something went wrong. Please email Sofia directly at sofiapiniella@iftheplanet.com');
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────────
+function copyText(id, copiedId) {
+  var text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var el = document.getElementById(copiedId);
+    el.classList.add('show');
+    setTimeout(function(){ el.classList.remove('show'); }, 2000);
+  });
+}
+
+function switchTab(t) {
+  ['overview','sales','kit','resources'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.remove('active');
+    document.getElementById('btn-'+x).classList.remove('active');
+  });
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('btn-'+t).classList.add('active');
+}
+</script>
+</body>
+</html>
