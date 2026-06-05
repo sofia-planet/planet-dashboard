@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PLANET — Operations Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#2C1F1A;--gold:#B8936A;--cream:#F7F3EE;--stone:#9E8E82;
+  --border:#E5DDD5;--white:#FDFBF9;--green:#4A7C59;--red:#8B3A3A;
+  --blue:#3A5A8B;--bg:#EDE6DC;--dark-stone:#6B5D55;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'Montserrat',sans-serif;color:var(--deep);min-height:100vh;}
+
+/* ── HEADER ── */
+header{
+  background:var(--deep);padding:0 40px;height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:3px solid var(--gold);
+}
+.h-brand{display:flex;align-items:baseline;gap:12px;}
+.h-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;color:var(--white);letter-spacing:0.06em;}
+.h-sub{font-size:8px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);}
+.h-date{font-size:9px;letter-spacing:0.1em;color:var(--stone);}
+.h-refresh{background:transparent;border:1px solid rgba(184,147,106,0.3);color:var(--gold);font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all 0.2s;margin-left:16px;}
+.h-refresh:hover{background:rgba(184,147,106,0.1);}
+
+/* ── NAV ── */
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:0 40px;display:flex;}
+.nb{background:transparent;border:none;border-bottom:2px solid transparent;padding:13px 18px;font-family:'Montserrat',sans-serif;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:var(--stone);cursor:pointer;transition:all 0.2s;margin-bottom:-1px;}
+.nb.active{color:var(--deep);border-bottom-color:var(--gold);font-weight:600;}
+
+/* ── MAIN ── */
+main{padding:28px 40px;max-width:1400px;margin:0 auto;}
+
+/* ── TABS ── */
+.tab{display:none;}.tab.active{display:block;}
+
+/* ── SECTION TITLE ── */
+.st{font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--stone);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.st::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── STAT CARDS ── */
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px;}
+.sc{background:var(--white);border:1px solid var(--border);padding:20px 18px;position:relative;}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.sc.gold::before{background:var(--gold);}
+.sc.green::before{background:var(--green);}
+.sc.blue::before{background:var(--blue);}
+.sc.stone::before{background:var(--stone);}
+.sc.red::before{background:var(--red);}
+.sv{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;line-height:1;margin-bottom:5px;}
+.sv.gold{color:var(--gold);}
+.sv.green{color:var(--green);}
+.sv.blue{color:var(--blue);}
+.sl{font-size:8px;letter-spacing:0.13em;text-transform:uppercase;color:var(--stone);}
+
+/* ── GRID LAYOUTS ── */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:18px;}
+.g13{display:grid;grid-template-columns:1fr 3fr;gap:18px;margin-bottom:18px;}
+
+/* ── CARDS ── */
+.card{background:var(--white);border:1px solid var(--border);padding:22px;}
+.card-title{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--stone);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+
+/* ── PARTNER CARDS ── */
+.partners-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.pc{background:var(--white);border:1px solid var(--border);padding:18px;position:relative;overflow:hidden;}
+.pc::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold);}
+.pc-name{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;margin-bottom:4px;}
+.pc-detail{font-size:9px;color:var(--stone);margin-bottom:3px;line-height:1.5;}
+.pc-badge{display:inline-block;padding:2px 8px;font-size:7px;letter-spacing:0.1em;text-transform:uppercase;background:rgba(74,124,89,0.1);color:var(--green);border:1px solid rgba(74,124,89,0.2);margin-top:6px;}
+
+/* ── PIPELINE ── */
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
+.pl-col{background:var(--white);border:1px solid var(--border);}
+.pl-hd{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.pl-hn{font-size:8px;letter-spacing:0.12em;text-transform:uppercase;color:var(--stone);}
+.pl-hc{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:400;}
+.pl-hc.gold{color:var(--gold);}
+.pl-hc.blue{color:var(--blue);}
+.pl-hc.green{color:var(--green);}
+.pl-hc.red{color:var(--red);}
+.pl-body{padding:10px 12px;display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto;}
+.pl-item{padding:8px 10px;background:var(--bg);border:1px solid var(--border);font-size:9px;}
+.pl-item-name{font-weight:600;margin-bottom:2px;color:var(--deep);}
+.pl-item-detail{color:var(--stone);font-size:8px;}
+
+/* ── TABLE ── */
+.tbl-wrap{background:var(--white);border:1px solid var(--border);overflow:hidden;margin-bottom:18px;}
+.tbl-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.tbl-title{font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--stone);}
+.tbl-search{border:1px solid var(--border);padding:6px 12px;font-family:'Montserrat',sans-serif;font-size:9px;color:var(--deep);background:var(--cream);outline:none;width:200px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--cream);}
+th{padding:8px 14px;font-size:7.5px;letter-spacing:0.13em;text-transform:uppercase;color:var(--stone);text-align:left;border-bottom:1px solid var(--border);}
+td{padding:9px 14px;font-size:10px;border-bottom:1px solid var(--border);color:var(--deep);}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:rgba(184,147,106,0.03);}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 7px;font-size:7.5px;letter-spacing:0.08em;text-transform:uppercase;}
+.badge.active{background:rgba(74,124,89,0.1);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+.badge.contacted{background:rgba(158,142,130,0.1);color:var(--stone);border:1px solid rgba(158,142,130,0.2);}
+.badge.interested{background:rgba(184,147,106,0.1);color:var(--gold);border:1px solid rgba(184,147,106,0.2);}
+.badge.scheduled{background:rgba(58,90,139,0.1);color:var(--blue);border:1px solid rgba(58,90,139,0.2);}
+.badge.passed{background:rgba(139,58,58,0.1);color:var(--red);border:1px solid rgba(139,58,58,0.2);}
+.badge.shipped{background:rgba(58,90,139,0.1);color:var(--blue);border:1px solid rgba(58,90,139,0.2);}
+.badge.requested{background:rgba(184,147,106,0.1);color:var(--gold);border:1px solid rgba(184,147,106,0.2);}
+.badge.delivered{background:rgba(74,124,89,0.1);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+.badge.completed{background:rgba(74,124,89,0.1);color:var(--green);border:1px solid rgba(74,124,89,0.2);}
+
+/* ── KIT STATUS ── */
+.kit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px;}
+.kit-card{background:var(--white);border:1px solid var(--border);padding:18px;position:relative;}
+.kit-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold);}
+.kit-name{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;margin-bottom:8px;}
+.kit-row{display:flex;gap:8px;margin-bottom:4px;align-items:flex-start;}
+.kit-label{font-size:7.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--stone);min-width:60px;padding-top:1px;}
+.kit-val{font-size:9px;color:var(--dark-stone);line-height:1.4;flex:1;}
+
+/* ── LOADING ── */
+.loading{text-align:center;padding:40px;color:var(--stone);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;}
+.spin{display:inline-block;width:14px;height:14px;border:1.5px solid rgba(184,147,106,0.3);border-top-color:var(--gold);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── FORM ── */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group.full{grid-column:1/-1;}
+label{font-size:8px;letter-spacing:0.13em;text-transform:uppercase;color:var(--stone);}
+input,select,textarea{border:1px solid var(--border);padding:9px 12px;font-family:'Montserrat',sans-serif;font-size:10px;color:var(--deep);background:var(--cream);outline:none;transition:border 0.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{resize:vertical;min-height:70px;}
+.btn{background:var(--gold);color:var(--white);border:none;padding:10px 28px;font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;cursor:pointer;transition:background 0.2s;}
+.btn:hover{background:#A07A54;}
+.btn.secondary{background:var(--deep);}
+.success-msg{background:rgba(74,124,89,0.08);border:1px solid rgba(74,124,89,0.2);padding:12px;color:var(--green);font-size:10px;margin-top:12px;display:none;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-brand">
+    <span class="h-logo">PLANET</span>
+    <span class="h-sub">Style Collective Ops</span>
+  </div>
+  <div style="display:flex;align-items:center;">
+    <span class="h-date" id="hdrDate"></span>
+    <button class="h-refresh" onclick="loadAll()">↻ Refresh</button>
+  </div>
+</header>
+
+<nav>
+  <button class="nb active" id="btn-overview" onclick="switchTab('overview')">Overview</button>
+  <button class="nb" id="btn-pipeline" onclick="switchTab('pipeline')">Pipeline</button>
+  <button class="nb" id="btn-kits" onclick="switchTab('kits')">Kit Tracker</button>
+  <button class="nb" id="btn-calls" onclick="switchTab('calls')">Calls</button>
+  <button class="nb" id="btn-contacts" onclick="switchTab('contacts')">All Contacts</button>
+  <button class="nb" id="btn-add" onclick="switchTab('add')">+ Add Contact</button>
+</nav>
+
+<main>
+
+  <!-- OVERVIEW -->
+  <div class="tab active" id="tab-overview">
+    <div class="loading"><span class="spin"></span>Loading...</div>
+  </div>
+
+  <!-- PIPELINE -->
+  <div class="tab" id="tab-pipeline">
+    <div class="loading"><span class="spin"></span>Loading...</div>
+  </div>
+
+  <!-- KITS -->
+  <div class="tab" id="tab-kits">
+    <div class="loading"><span class="spin"></span>Loading...</div>
+  </div>
+
+  <!-- CALLS -->
+  <div class="tab" id="tab-calls">
+    <div class="loading"><span class="spin"></span>Loading...</div>
+  </div>
+
+  <!-- CONTACTS -->
+  <div class="tab" id="tab-contacts">
+    <div class="loading"><span class="spin"></span>Loading...</div>
+  </div>
+
+  <!-- ADD CONTACT -->
+  <div class="tab" id="tab-add">
+    <div class="st">Add New Contact</div>
+    <div class="card" style="max-width:700px;">
+      <div class="card-title">New Prospect / Partner</div>
+      <div class="form-row">
+        <div class="form-group"><label>Name *</label><input type="text" id="addName" placeholder="Full name"/></div>
+        <div class="form-group"><label>Email</label><input type="email" id="addEmail" placeholder="email@example.com"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Instagram Handle</label><input type="text" id="addInsta" placeholder="@handle"/></div>
+        <div class="form-group"><label>Market / Location</label><input type="text" id="addMarket" placeholder="NYC, South FL, etc."/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Status</label>
+          <select id="addStatus">
+            <option value="Contacted">Contacted</option>
+            <option value="Interested">Interested</option>
+            <option value="Call Scheduled">Call Scheduled</option>
+            <option value="Active Partner">Active Partner</option>
+            <option value="Passed">Passed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Outreach Source</label>
+          <select id="addSource">
+            <option value="Instagram">Instagram</option>
+            <option value="Email">Email</option>
+            <option value="Referral">Referral</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group full"><label>Notes</label><textarea id="addNotes" placeholder="Any notes about this contact..."></textarea></div>
+      </div>
+      <button class="btn" onclick="addContact()">Add Contact</button>
+      <div class="success-msg" id="addSuccess">✓ Contact added successfully!</div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────
+var AT = 'pattCK8tOv3M4b3l0.68863e0f8722856c54edd95487612decea5f8f299578597572fa348abf28ad83';
+var PROXY = 'https://api.allorigins.win/raw?url=';
+
+// PLANET Style Collective base — Prospects/Stylists
+var BASE_PIPELINE = 'appTCR9CFFn3y2Lgq';
+var TBL_STYLISTS  = 'tblHzWUaTsjGj5b9N'; // STYLISTS table
+var TBL_PROSPECTS = 'tblku4UydCySa4fvd'; // Prospects table
+
+// Operations base — Kit Tracker + Calls
+var BASE_OPS  = 'appcWi7IehxMnh4g3';
+var TBL_KITS  = 'tblk3AUMgT7C0vT7w';
+var TBL_CALLS = 'tblwbqab2oOqqUZDR';
+
+// Field IDs — Prospects table
+var PF = {
+  name:'fldlwjCtxUwD2OtaS', status:'fldNQrpQMJCiwE1Tr',
+  email:'fldt5FDjRt9QIQSwX', location:'fld11DfUijW5i6RVZ',
+  channel:'fld0MRgRZgHc5I6sv', date:'fldp648BxV5MKWA1N', notes:'fldBoECgjy8cQMABM'
+};
+// Field IDs — STYLISTS table
+var SF = {
+  name:'fldHtEhMilxPEhagH', insta:'fldCRwgVNGYKqHCf0', email:'flddqh8eeZZMF8dP1',
+  market:'fldC7hRPgci82sRwi', status:'fldqkTZ0mJuscLMoe', notes:'fldvMtNG5ROPdl1wK',
+  lastContact:'fld5A5e0XT5K5q81i', lastNote:'fldtziPzgxbQpbpIN', followers:'fld4KCpc6NEU8KWy9'
+};
+// Field IDs — Kit Tracker
+var KF = {
+  name:'fldMwCzvEi3QgCngw', status:'fldsM8Hgklvp3NuEi', pieces:'fldHGyLTgtcSGYOO8',
+  address:'fldxqTaqPugI2gQrZ', shipDate:'fldY3DYeZ8eNfWHAa', returnDate:'fldWhMciFdPyAI0v6',
+  tracking:'fldtb41pNh5bTBoJj', notes:'fldfyrrLDEEAwtAvN'
+};
+// Field IDs — Calls
+var CF = {
+  name:'fldUkJX7hbKkHSbmw', status:'fldo4dBI9cFeBIQUp', datetime:'fld6U3X4FL7W7MU1L',
+  outcome:'fldfRo7gf8LMfMsgh', email:'fldcCqKHH2Glm6BJm', notes:'fldgQLOLQ82GzPW5L'
+};
+
+var DATA = { prospects: [], kits: [], calls: [], stylists: [] };
+
+// ── FETCH ────────────────────────────────────────────────────────
+async function atFetch(base, table, extra) {
+  var all = [], offset = null;
+  do {
+    var url = 'https://api.airtable.com/v0/' + base + '/' + table + '?pageSize=100' + (offset?'&offset='+offset:'') + (extra||'');
+    var r = await fetch(PROXY + encodeURIComponent(url), { headers: { Authorization: 'Bearer ' + AT } });
+    var d = await r.json();
+    if (d.records) all = all.concat(d.records);
+    offset = d.offset || null;
+  } while (offset);
+  return all;
+}
+
+async function atCreate(base, table, fields) {
+  var url = 'https://api.airtable.com/v0/' + base + '/' + table;
+  var r = await fetch(PROXY + encodeURIComponent(url), {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + AT, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ records: [{ fields }] })
+  });
+  return r.json();
+}
+
+function fv(record, fieldId) {
+  var v = record.fields[fieldId];
+  if (!v) return '';
+  if (typeof v === 'object' && v.name) return v.name;
+  if (Array.isArray(v)) return v.map(x => x.name||x).join(', ');
+  return v;
+}
+
+// ── LOAD ALL ────────────────────────────────────────────────────
+async function loadAll() {
+  document.getElementById('hdrDate').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+  try {
+    var [prospects, kits, calls] = await Promise.all([
+      atFetch(BASE_PIPELINE, TBL_PROSPECTS),
+      atFetch(BASE_OPS, TBL_KITS),
+      atFetch(BASE_OPS, TBL_CALLS)
+    ]);
+    DATA.prospects = prospects;
+    DATA.kits = kits;
+    DATA.calls = calls;
+    renderOverview();
+    renderPipeline();
+    renderKits();
+    renderCalls();
+    renderContacts();
+  } catch(e) {
+    console.error(e);
+  }
+}
+
+// ── OVERVIEW ────────────────────────────────────────────────────
+function renderOverview() {
+  var ps = DATA.prospects;
+  var counts = {ap:0,cs:0,in:0,co:0,pa:0,total:ps.length};
+  ps.forEach(function(r) {
+    var s = fv(r, PF.status);
+    if (s==='Active Partner') counts.ap++;
+    else if (s==='Call Scheduled') counts.cs++;
+    else if (s==='Interested') counts.in++;
+    else if (s==='Contacted') counts.co++;
+    else if (s==='Passed') counts.pa++;
+  });
+
+  var activePartners = ps.filter(r=>fv(r,PF.status)==='Active Partner');
+  var upcomingCalls = DATA.calls.filter(r=>fv(r,CF.status)==='Scheduled');
+  var kitsInFlight = DATA.kits.filter(r=>['Requested','Packing','Shipped','Delivered'].includes(fv(r,KF.status)));
+
+  var partnerHTML = activePartners.map(function(r) {
+    var notes = fv(r, PF.notes);
+    return '<div class="pc"><div class="pc-name">'+fv(r,PF.name)+'</div>'
+      +'<div class="pc-detail">'+fv(r,PF.location)+'</div>'
+      +(notes?'<div class="pc-detail" style="font-size:8px;margin-top:4px">'+notes.substring(0,80)+'</div>':'')
+      +'<span class="pc-badge">Active Partner</span></div>';
+  }).join('');
+
+  var callsHTML = upcomingCalls.slice(0,4).map(function(r) {
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="font-size:10px;font-weight:600;color:var(--deep)">'+fv(r,CF.name)+'</div>'
+      +'<div style="font-size:9px;color:var(--stone);margin-top:2px">'+fv(r,CF.datetime)+'</div>'
+      +'</div>';
+  }).join('') || '<div style="font-size:9px;color:var(--stone);padding:8px 0;font-style:italic">No upcoming calls</div>';
+
+  var kitsHTML = kitsInFlight.slice(0,6).map(function(r) {
+    var ks = fv(r,KF.status);
+    var cls = ks==='Shipped'?'shipped':ks==='Delivered'?'delivered':'requested';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)">'
+      +'<span style="font-size:10px">'+fv(r,KF.name)+'</span>'
+      +'<span class="badge '+cls+'">'+ks+'</span></div>';
+  }).join('') || '<div style="font-size:9px;color:var(--stone);font-style:italic;padding:8px 0">No kits in flight</div>';
+
+  document.getElementById('tab-overview').innerHTML =
+    '<div class="stats">'
+      +'<div class="sc gold"><div class="sv gold">'+counts.ap+'</div><div class="sl">Active Partners</div></div>'
+      +'<div class="sc blue"><div class="sv blue">'+counts.cs+'</div><div class="sl">Calls Scheduled</div></div>'
+      +'<div class="sc green"><div class="sv green">'+counts.in+'</div><div class="sl">Interested</div></div>'
+      +'<div class="sc stone"><div class="sv">'+counts.co+'</div><div class="sl">Contacted</div></div>'
+      +'<div class="sc"><div class="sv">'+counts.total+'</div><div class="sl">Total Outreach</div></div>'
+    +'</div>'
+    +'<div class="st">Active Partners</div>'
+    +'<div class="partners-grid" style="margin-bottom:24px">'+partnerHTML+'</div>'
+    +'<div class="g2">'
+      +'<div class="card"><div class="card-title">Upcoming Calls</div>'+callsHTML+'</div>'
+      +'<div class="card"><div class="card-title">Kit Status</div>'+kitsHTML+'</div>'
+    +'</div>';
+}
+
+// ── PIPELINE ────────────────────────────────────────────────────
+function renderPipeline() {
+  var ps = DATA.prospects;
+  var groups = {'Active Partner':[],'Call Scheduled':[],'Interested':[],'Contacted':[]};
+  ps.forEach(function(r){
+    var s = fv(r,PF.status);
+    if (groups[s]) groups[s].push(r);
+  });
+
+  function colHTML(label, records, cls) {
+    var items = records.slice(0,8).map(function(r){
+      var n = fv(r,PF.notes)||''; var loc = fv(r,PF.location);
+      return '<div class="pl-item"><div class="pl-item-name">'+fv(r,PF.name)+'</div>'
+        +(loc?'<div class="pl-item-detail">'+loc+'</div>':'')
+        +(n?'<div class="pl-item-detail">'+n.substring(0,50)+'</div>':'')+'</div>';
+    }).join('');
+    var extra = records.length > 8 ? '<div style="text-align:center;padding:8px;font-size:8px;color:var(--stone);letter-spacing:0.1em">+ '+(records.length-8)+' more</div>' : '';
+    return '<div class="pl-col"><div class="pl-hd"><span class="pl-hn">'+label+'</span><span class="pl-hc '+cls+'">'+records.length+'</span></div><div class="pl-body">'+items+extra+'</div></div>';
+  }
+
+  document.getElementById('tab-pipeline').innerHTML =
+    '<div class="pipeline">'
+      +colHTML('Active Partner', groups['Active Partner'], 'green')
+      +colHTML('Call Scheduled', groups['Call Scheduled'], 'blue')
+      +colHTML('Interested', groups['Interested'], 'gold')
+      +colHTML('Contacted', groups['Contacted'], '')
+    +'</div>';
+}
+
+// ── KITS ────────────────────────────────────────────────────────
+function renderKits() {
+  var kits = DATA.kits;
+  var html = kits.map(function(r) {
+    var ks = fv(r,KF.status);
+    var cls = ks==='Shipped'?'shipped':ks==='Delivered'?'delivered':'requested';
+    return '<div class="kit-card">'
+      +'<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">'
+        +'<div class="kit-name">'+fv(r,KF.name)+'</div>'
+        +'<span class="badge '+cls+'">'+ks+'</span>'
+      +'</div>'
+      +(fv(r,KF.pieces)?'<div class="kit-row"><span class="kit-label">Pieces</span><span class="kit-val">'+fv(r,KF.pieces)+'</span></div>':'')
+      +(fv(r,KF.address)?'<div class="kit-row"><span class="kit-label">Ship To</span><span class="kit-val">'+fv(r,KF.address)+'</span></div>':'')
+      +(fv(r,KF.shipDate)?'<div class="kit-row"><span class="kit-label">Ship Date</span><span class="kit-val">'+fv(r,KF.shipDate)+'</span></div>':'')
+      +(fv(r,KF.tracking)?'<div class="kit-row"><span class="kit-label">Tracking</span><span class="kit-val">'+fv(r,KF.tracking)+'</span></div>':'')
+      +(fv(r,KF.notes)?'<div class="kit-row"><span class="kit-label">Notes</span><span class="kit-val">'+fv(r,KF.notes)+'</span></div>':'')
+    +'</div>';
+  }).join('');
+
+  document.getElementById('tab-kits').innerHTML =
+    '<div class="st">Kit Tracker — '+kits.length+' kits</div>'
+    +'<div class="kit-grid">'+html+'</div>';
+}
+
+// ── CALLS ────────────────────────────────────────────────────────
+function renderCalls() {
+  var calls = DATA.calls;
+  var upcoming = calls.filter(r=>fv(r,CF.status)==='Scheduled');
+  var completed = calls.filter(r=>fv(r,CF.status)==='Completed');
+
+  function callRows(arr) {
+    return arr.map(function(r){
+      var outcome = fv(r,CF.outcome);
+      var cls = outcome.includes('✅')?'active':outcome.includes('❌')?'passed':outcome?'interested':'contacted';
+      return '<tr><td><strong>'+fv(r,CF.name)+'</strong></td>'
+        +'<td style="color:var(--stone)">'+fv(r,CF.datetime)+'</td>'
+        +'<td style="color:var(--stone)">'+fv(r,CF.email)+'</td>'
+        +(outcome?'<td><span class="badge '+cls+'">'+outcome+'</span></td>':'<td></td>')
+        +'<td style="font-size:9px;color:var(--stone)">'+fv(r,CF.notes)+'</td></tr>';
+    }).join('');
+  }
+
+  document.getElementById('tab-calls').innerHTML =
+    '<div class="st">Upcoming Calls — '+upcoming.length+'</div>'
+    +'<div class="tbl-wrap" style="margin-bottom:24px">'
+      +'<table><thead><tr><th>Name</th><th>When</th><th>Email</th><th>Outcome</th><th>Notes</th></tr></thead>'
+      +'<tbody>'+callRows(upcoming)+'</tbody></table>'
+    +'</div>'
+    +'<div class="st">Completed Calls — '+completed.length+'</div>'
+    +'<div class="tbl-wrap">'
+      +'<table><thead><tr><th>Name</th><th>When</th><th>Email</th><th>Outcome</th><th>Notes</th></tr></thead>'
+      +'<tbody>'+callRows(completed)+'</tbody></table>'
+    +'</div>';
+}
+
+// ── CONTACTS ────────────────────────────────────────────────────
+var contactFilter = 'all';
+function renderContacts(q) {
+  var ps = DATA.prospects;
+  var search = (q||'').toLowerCase();
+  var filtered = ps.filter(function(r){
+    var s = fv(r,PF.status);
+    var matchF = contactFilter==='all' || s===contactFilter;
+    var matchQ = !search || fv(r,PF.name).toLowerCase().includes(search) || fv(r,PF.email).toLowerCase().includes(search) || fv(r,PF.location).toLowerCase().includes(search);
+    return matchF && matchQ;
+  });
+
+  var statuses = ['all','Active Partner','Call Scheduled','Interested','Contacted','Passed'];
+  var pills = statuses.map(function(s){
+    var cnt = s==='all' ? ps.length : ps.filter(r=>fv(r,PF.status)===s).length;
+    var label = s==='all'?'All ('+ps.length+')':s+' ('+cnt+')';
+    return '<button style="padding:4px 10px;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;border:1px solid var(--border);background:'+(contactFilter===s?'var(--deep)':'transparent')+';color:'+(contactFilter===s?'var(--white)':'var(--stone)')+';font-family:Montserrat,sans-serif;cursor:pointer;" onclick="contactFilter=\''+s+'\';renderContacts(document.getElementById(\'cSearch\').value)">' + label + '</button>';
+  }).join('');
+
+  var rows = filtered.map(function(r){
+    var s = fv(r,PF.status);
+    var cls = s==='Active Partner'?'active':s==='Passed'?'passed':s==='Interested'?'interested':s==='Call Scheduled'?'scheduled':'contacted';
+    return '<tr><td><strong>'+fv(r,PF.name)+'</strong></td>'
+      +'<td style="font-size:9px;color:var(--stone)">'+fv(r,PF.email)+'</td>'
+      +'<td style="color:var(--stone)">'+fv(r,PF.location)+'</td>'
+      +'<td><span class="badge '+cls+'">'+s+'</span></td>'
+      +'<td style="color:var(--stone)">'+fv(r,PF.date)+'</td>'
+      +'<td style="font-size:9px;color:var(--stone);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+fv(r,PF.notes)+'</td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--stone);font-style:italic">No contacts match</td></tr>';
+
+  document.getElementById('tab-contacts').innerHTML =
+    '<div class="tbl-wrap">'
+      +'<div class="tbl-head">'
+        +'<div style="display:flex;gap:5px;flex-wrap:wrap">'+pills+'</div>'
+        +'<input id="cSearch" class="tbl-search" type="text" placeholder="Search..." oninput="renderContacts(this.value)"/>'
+      +'</div>'
+      +'<table><thead><tr><th>Name</th><th>Email</th><th>Location</th><th>Status</th><th>Last Contact</th><th>Notes</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table>'
+    +'</div>';
+}
+
+// ── ADD CONTACT ────────────────────────────────────────────────
+async function addContact() {
+  var name = document.getElementById('addName').value.trim();
+  if (!name) { alert('Name is required'); return; }
+  var fields = {};
+  fields[PF.name] = name;
+  var email = document.getElementById('addEmail').value.trim();
+  if (email) fields[PF.email] = email;
+  var loc = document.getElementById('addMarket').value.trim();
+  if (loc) fields[PF.location] = loc;
+  var notes = document.getElementById('addNotes').value.trim();
+  // status is singleSelect - set it
+  fields[PF.status] = document.getElementById('addStatus').value;
+  fields[PF.channel] = document.getElementById('addSource').value;
+  fields[PF.date] = new Date().toISOString().split('T')[0];
+
+  try {
+    await atCreate(BASE_PIPELINE, TBL_PROSPECTS, fields);
+    document.getElementById('addSuccess').style.display = 'block';
+    ['addName','addEmail','addInsta','addMarket','addNotes'].forEach(id=>document.getElementById(id).value='');
+    setTimeout(function(){ document.getElementById('addSuccess').style.display='none'; }, 3000);
+    await loadAll();
+  } catch(e) {
+    alert('Error adding contact. Please try again.');
+  }
+}
+
+// ── HELPERS ────────────────────────────────────────────────────
+function switchTab(t) {
+  ['overview','pipeline','kits','calls','contacts','add'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.remove('active');
+    document.getElementById('btn-'+x).classList.remove('active');
+  });
+  document.getElementById('tab-'+t).classList.add('active');
+  document.getElementById('btn-'+t).classList.add('active');
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+loadAll();
+</script>
+</body>
+</html>
